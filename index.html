@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>工学系技術者の半導体ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F4F8; --surface:#FFFFFF; --ink:#1A2132; --muted:#5B6477;
+  --rule:#CBD1DD; --cb:#2B57CF; --vb:#A8325C; --gap:#E3E7EF;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#141924; --surface:#1C2230; --ink:#E6E9F0; --muted:#9AA3B6;
+    --rule:#343C4E; --cb:#7C9BF0; --vb:#E07A9C; --gap:#232A3A;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141924; --surface:#1C2230; --ink:#E6E9F0; --muted:#9AA3B6;
+  --rule:#343C4E; --cb:#7C9BF0; --vb:#E07A9C; --gap:#232A3A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  font-size:17px; line-height:1.85; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:0 1.25rem}
+h1,h2,h3{font-family:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;line-height:1.35;font-weight:800}
+a{color:var(--cb)}
+a:focus-visible{outline:2px solid var(--cb);outline-offset:3px;border-radius:2px}
+
+/* Hero: band diagram */
+.hero{padding:3.5rem 0 2.5rem}
+.band{width:100%;max-width:100%;height:auto;display:block}
+.band .cb{fill:var(--cb)} .band .vb{fill:var(--vb)}
+.band .gapfill{fill:var(--gap)}
+.band text{font-family:"Zen Kaku Gothic New",sans-serif;font-size:13px;fill:var(--muted)}
+.band .lbl{fill:#fff;font-weight:700;font-size:14px}
+.electron{fill:var(--surface);stroke:var(--cb);stroke-width:2.5}
+.hole{fill:none;stroke:var(--surface);stroke-width:2.5}
+@keyframes hop{0%,25%{transform:translateY(0)}55%,100%{transform:translateY(-118px)}}
+@keyframes holeIn{0%,40%{opacity:0}60%,100%{opacity:1}}
+.electron{animation:hop 2.4s cubic-bezier(.5,0,.3,1) .6s 1 forwards}
+.hole{opacity:0;animation:holeIn 2.4s ease .6s 1 forwards}
+@media (prefers-reduced-motion: reduce){
+  .electron{animation:none;transform:translateY(-118px)}
+  .hole{animation:none;opacity:1}
+}
+.hero h1{font-size:clamp(1.9rem,6vw,2.8rem);margin:1.6rem 0 .6rem;letter-spacing:.02em}
+.hero p{color:var(--muted);margin:0;max-width:36em}
+
+/* TOC */
+.toc{border-top:2px solid var(--ink);padding:1.5rem 0 1rem;margin-top:1rem}
+.toc h2{font-size:1.5rem;margin:0 0 1rem}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc>ol>li{display:grid;grid-template-columns:3.2rem 1fr;gap:0 .75rem;padding:1rem 0;border-bottom:1px solid var(--rule)}
+.num{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:1.6rem;line-height:1.2;color:var(--muted)}
+.ready .num{color:var(--cb)}
+.ch-title{font-weight:700;font-size:1.08rem;line-height:1.5}
+.ch-title a{color:var(--ink);text-decoration-color:var(--cb);text-underline-offset:4px}
+.state{display:inline-block;font-size:.78rem;font-weight:500;margin-left:.5rem;padding:0 .5rem;border-radius:3px;vertical-align:2px}
+.ready .state{background:var(--cb);color:#fff}
+.soon .state{border:1px solid var(--rule);color:var(--muted)}
+.toc li ul{list-style:none;margin:.35rem 0 0;padding:0;font-size:.92rem;color:var(--muted);line-height:1.7}
+.toc li ul li{display:inline}
+.toc li ul li+li::before{content:"／";margin:0 .3em;color:var(--rule)}
+.bridge{grid-column:2;font-size:.85rem;color:var(--vb);margin-top:.3rem}
+
+/* Lesson */
+.lesson{padding:3rem 0 2rem}
+.lesson-head{border-left:6px solid var(--cb);padding-left:1rem;margin-bottom:2rem}
+.lesson-head .no{color:var(--cb);font-weight:700;font-size:.95rem}
+.lesson-head h2{font-size:clamp(1.5rem,4.5vw,2rem);margin:.2rem 0 0}
+.lesson h3{font-size:1.25rem;margin:2.4rem 0 .6rem}
+.lesson p{margin:0 0 1rem}
+.diagram{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:1rem;margin:1.2rem 0;overflow-x:auto}
+.diagram svg{display:block;max-width:100%;height:auto;margin:0 auto}
+.diagram svg text{font-family:"Zen Kaku Gothic New",sans-serif;fill:var(--ink);font-size:13px}
+.table-wrap{overflow-x:auto;margin:1.2rem 0}
+table{border-collapse:collapse;width:100%;min-width:30rem;font-size:.95rem}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:700;border-bottom:2px solid var(--ink)}
+td.v{white-space:nowrap;font-variant-numeric:tabular-nums}
+.point{background:var(--surface);border-top:3px solid var(--vb);padding:1rem 1.2rem;margin:1.5rem 0;border-radius:0 0 6px 6px}
+.point strong{color:var(--vb)}
+.quiz{border:2px solid var(--ink);border-radius:6px;padding:1.2rem 1.3rem;margin:2.5rem 0 1rem;background:var(--surface)}
+.quiz h3{margin:0 0 .5rem}
+details{margin-top:.8rem}
+summary{cursor:pointer;font-weight:700;color:var(--cb)}
+summary:focus-visible{outline:2px solid var(--cb);outline-offset:3px}
+.back{display:inline-block;margin-top:1rem;font-size:.9rem}
+footer{border-top:1px solid var(--rule);padding:1.5rem 0 3rem;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <svg class="band" viewBox="0 0 640 230" role="img" aria-label="エネルギーバンド図：価電子帯の電子がバンドギャップを越えて伝導帯へ上がり、あとに正孔が残る">
+    <rect class="cb" x="40" y="20" width="560" height="56" rx="4"/>
+    <rect class="gapfill" x="40" y="76" width="560" height="62"/>
+    <rect class="vb" x="40" y="138" width="560" height="56" rx="4"/>
+    <text class="lbl" x="56" y="53">伝導帯</text>
+    <text class="lbl" x="56" y="171">価電子帯</text>
+    <text x="56" y="112">バンドギャップ　Si：1.12 eV</text>
+    <circle class="hole" cx="430" cy="166" r="9"/>
+    <circle class="electron" cx="430" cy="166" r="9"/>
+    <text x="40" y="222">熱や光のエネルギーで電子がギャップを越えると、電気が流れはじめる。</text>
+  </svg>
+  <h1>工学系技術者の半導体ノート</h1>
+  <p>バンド理論からトランジスタ、論理回路、AIチップまで。材料工学の言葉を足がかりに、半導体がなぜ「計算する石」になるのかを順番にたどる自分用の学習ノート。</p>
+</header>
+
+<nav class="toc" id="toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">目次</h2>
+  <ol>
+    <li class="ready">
+      <span class="num">1</span>
+      <div>
+        <div class="ch-title"><a href="#lesson1">なぜシリコンは「半導体」なのか</a><span class="state">公開</span></div>
+        <ul><li>電気が流れるとは</li><li>バンド理論</li><li>導体・絶縁体・半導体</li><li>半導体の本当の価値</li><li>材料工学との接点</li><li>確認クイズ</li></ul>
+      </div>
+    </li>
+    <li class="soon">
+      <span class="num">2</span>
+      <div>
+        <div class="ch-title">電子と正孔、ドーピング<span class="state">準備中</span></div>
+        <ul><li>真性半導体のキャリア</li><li>正孔という考え方</li><li>n型（リン・ヒ素）</li><li>p型（ホウ素）</li><li>フェルミ準位</li></ul>
+      </div>
+    </li>
+    <li class="soon">
+      <span class="num">3</span>
+      <div>
+        <div class="ch-title">pn接合とダイオード<span class="state">準備中</span></div>
+        <ul><li>拡散と空乏層</li><li>内蔵電位</li><li>順バイアス・逆バイアス</li><li>整流作用</li><li>LEDと太陽電池</li></ul>
+      </div>
+    </li>
+    <li class="soon">
+      <span class="num">4</span>
+      <div>
+        <div class="ch-title">MOSFET：電圧で動くスイッチ<span class="state">準備中</span></div>
+        <ul><li>MOS構造</li><li>反転層とチャネル</li><li>しきい値電圧</li><li>nMOSとpMOS</li><li>CMOS</li></ul>
+      </div>
+    </li>
+    <li class="soon">
+      <span class="num">5</span>
+      <div>
+        <div class="ch-title">トランジスタから論理回路へ<span class="state">準備中</span></div>
+        <ul><li>インバータ</li><li>NANDとNOR</li><li>加算器</li><li>メモリ（SRAM・DRAM）</li><li>クロックと同期</li></ul>
+      </div>
+    </li>
+    <li class="soon">
+      <span class="num">6</span>
+      <div>
+        <div class="ch-title">微細化と製造プロセス<span class="state">準備中</span></div>
+        <ul><li>シリコンウェーハ</li><li>フォトリソグラフィとEUV</li><li>成膜・エッチング・イオン注入</li><li>ムーアの法則</li><li>FinFETからGAAへ</li></ul>
+      </div>
+    </li>
+    <li class="soon">
+      <span class="num">7</span>
+      <div>
+        <div class="ch-title">半導体とAIの接点<span class="state">準備中</span></div>
+        <ul><li>積和演算と行列</li><li>CPUとGPUの違い</li><li>メモリ帯域とHBM</li><li>AI専用チップ</li><li>消費電力という壁</li></ul>
+        <div class="bridge">次の「AIの原理」編へつながる章</div>
+      </div>
+    </li>
+    <li class="soon">
+      <span class="num">付</span>
+      <div>
+        <div class="ch-title">付録：用語集と基本の数値<span class="state">準備中</span></div>
+        <ul><li>用語集</li><li>主な物理定数</li><li>材料ごとのバンドギャップ</li></ul>
+      </div>
+    </li>
+  </ol>
+</nav>
+
+<article class="lesson" id="lesson1">
+  <div class="lesson-head">
+    <div class="no">第1回</div>
+    <h2>なぜシリコンは「半導体」なのか</h2>
+  </div>
+
+  <h3>電気が流れるとはどういうことか</h3>
+  <p>電流とは、物質の中を電子が動くこと。ただし、原子に束縛されて動けない電子は電流に寄与しない。つまり「動ける電子がどれだけいるか」で、導体・絶縁体・半導体が分かれる。</p>
+
+  <h3>バンド理論：電子の「席」の考え方</h3>
+  <p>原子が1個だけなら、電子のエネルギーは決まった値（エネルギー準位）しか取れない。ところがシリコン結晶のように原子が10<sup>23</sup>個規模で集まると、隣り合う原子の軌道が重なって準位が無数に分裂し、幅をもった「帯（バンド）」になる。</p>
+  <div class="diagram">
+    <svg viewBox="0 0 460 210" role="img" aria-label="伝導帯と価電子帯、その間のバンドギャップの関係">
+      <line x1="30" y1="200" x2="30" y2="12" stroke="currentColor" stroke-width="1.5" style="color:var(--muted)"/>
+      <polygon points="30,6 25,16 35,16" fill="var(--muted)"/>
+      <text x="38" y="20" style="fill:var(--muted)">エネルギー</text>
+      <rect x="70" y="34" width="190" height="44" rx="4" fill="var(--cb)"/>
+      <text x="90" y="61" style="fill:#fff;font-weight:700">伝導帯</text>
+      <rect x="70" y="138" width="190" height="44" rx="4" fill="var(--vb)"/>
+      <text x="90" y="165" style="fill:#fff;font-weight:700">価電子帯</text>
+      <line x1="165" y1="84" x2="165" y2="132" stroke="var(--muted)" stroke-dasharray="4 4"/>
+      <text x="275" y="61">ここの電子は自由に動ける</text>
+      <text x="275" y="112">バンドギャップ（禁制帯）</text>
+      <text x="275" y="130" style="fill:var(--muted);font-size:12px">電子が存在できないエネルギー域</text>
+      <text x="275" y="165">共有結合に使われ、動けない</text>
+    </svg>
+  </div>
+  <p>価電子帯の電子がバンドギャップを飛び越えて伝導帯に上がれば、電気が流れる。</p>
+
+  <h3>導体・絶縁体・半導体の違いは「ギャップの大きさ」</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>分類</th><th>例</th><th>バンドギャップ</th><th>室温での状態</th></tr></thead>
+      <tbody>
+        <tr><td>導体（金属）</td><td>銅、アルミ</td><td class="v">なし</td><td>バンドが重なるか途中まで詰まっていて、最初から動ける電子が多い</td></tr>
+        <tr><td>半導体</td><td>シリコン</td><td class="v">約1.12 eV</td><td>ごく一部の電子だけが熱で伝導帯へ上がる</td></tr>
+        <tr><td>絶縁体</td><td>ダイヤモンド、SiO₂</td><td class="v">約5.5 eV、約9 eV</td><td>室温の熱エネルギーではまず越えられない</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>比較の目安として、室温の熱エネルギー <i>kT</i> は約0.026 eV。シリコンのギャップはその40倍以上あるため、熱で上がれる電子は確率的にごくわずかになる。</p>
+
+  <h3>半導体の本当の価値</h3>
+  <div class="point">
+    「中途半端に流れる」ことに価値があるのではない。ギャップが適度だからこそ、<strong>不純物（ドーピング）・電圧・光・温度によって、電気の流れやすさを桁違いに制御できる</strong>。これがトランジスタ、つまりあらゆるチップの根本になる。
+  </div>
+
+  <h3>材料工学との接点</h3>
+  <p>シリコンはダイヤモンド構造で、各原子が4本の共有結合（sp³混成）で隣と結ばれている。価電子帯は「結合に使われている電子」、伝導帯に上がるとは「結合から電子が1個外れる」こと、と捉えると化学の言葉とつながる。</p>
+  <p>そして電子が抜けた跡には「穴」が残る。これが第2回の主役、<b>正孔（ホール）</b>になる。</p>
+
+  <section class="quiz" aria-labelledby="quiz1">
+    <h3 id="quiz1">確認クイズ</h3>
+    <p>温度を上げると、金属の電気抵抗は上がるが、純粋なシリコンの電気抵抗は下がる。なぜか。第1回の内容で説明してみよう。</p>
+    <details>
+      <summary>考え方のヒント</summary>
+      <p>金属では「動ける電子の数」はほぼ変わらない。温度で変わるのは何か。一方シリコンでは、温度が上がると「ギャップを越えられる電子の数」はどうなるか。</p>
+    </details>
+  </section>
+  <a class="back" href="#toc">目次へ戻る</a>
+</article>
+
+<footer>工学系技術者の半導体ノート　第1回まで公開</footer>
+</div>
+</body>
+</html>
